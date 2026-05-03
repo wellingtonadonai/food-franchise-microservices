@@ -3,14 +3,12 @@ package com.catalog_service.controller;
 
 import com.catalog_service.domain.Product;
 import com.catalog_service.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/product")
@@ -20,8 +18,14 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
+    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product){
         Product saveProduct = productService.createProduct(product);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saveProduct);
+        return ResponseEntity.status(201).body(saveProduct);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Product>> buscarProduto(){
+        List<Product> catalog = productService.getAllProduct();
+        return ResponseEntity.ok(catalog);
     }
 }
