@@ -57,6 +57,25 @@ public class ProductService {
     public List<Product> getAllProduct(){
         return repository.findAll();
     }
+
+    public void deleteProduct(String id){
+        if (!repository.existsById(id)){
+            throw new RuntimeException("Produto não encontrado para exclusão");
+        }
+        repository.deleteById(id);
+    }
+
+    public Product updateProduct(String id, Product novosDados) {
+
+        Product produtoExistente = repository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Produto não encontrado para atualização"));
+
+        produtoExistente.setNome(novosDados.getNome());
+        produtoExistente.setPreco(novosDados.getPreco());
+        produtoExistente.setListaIngredientes(novosDados.getListaIngredientes());
+        return repository.save(produtoExistente);
+    }
+
     public ProductService (ProductRepository repository,RestClient.Builder builder){
         this.repository = repository;
         this.restClient = builder.build();
