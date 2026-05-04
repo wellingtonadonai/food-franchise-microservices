@@ -28,6 +28,13 @@ public class ProductController {
         List<Product> catalog = productService.getAllProduct();
         return ResponseEntity.ok(catalog);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> buscarNomeProduto(@RequestParam String nome) {
+
+        List<Product> produtoEncontrado = productService.buscarProdutoPorNome(nome);
+        return ResponseEntity.ok(produtoEncontrado);
+
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> atualizarProduto(@PathVariable String id, @Valid @RequestBody Product product  ) {
