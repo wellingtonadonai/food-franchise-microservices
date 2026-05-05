@@ -1,5 +1,6 @@
 package com.catalog_service.service;
 
+import com.catalog_service.ProductProducer;
 import com.catalog_service.domain.Product;
 import com.catalog_service.repository.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -13,12 +14,16 @@ public class ProductService {
 
     private final ProductRepository repository;
     private final GeminiService geminiService;
+    private final ProductProducer kafka;
 
     public Product createProduct(Product product) {
 
         String textoGerado = geminiService.gerarDescricao(product.getNome(), product.getListaIngredientes());
         product.setDescricaoIA(textoGerado);
-        return repository.save(product);
+        Product salvo = repository.save(product);
+
+        kafka.enviarEvento(salvo, "CRIADO");
+        return salvo;
     }
 
     public List<Product> getAllProduct(){
@@ -55,14 +60,20 @@ public class ProductService {
             produtoExistente.setDescricaoIA(novaDescricao);
             System.out.println("Ingredientes alterados! Nova descrição gerada pela IA.");
         }
-        return repository.save(produtoExistente);
+        Product atualizado = repository.save(produtoExistente);
+
+        kafka.enviarEvento(atualizado, "ATUALIZADO");
+        return atualizado;
     }
 
 
-    public ProductService (ProductRepository repository, GeminiService geminiService){
+
+    public ProductService (ProductRepository repository, GeminiService geminiService, ProductProducer kafka){
         this.repository = repository;
         this.geminiService = geminiService;
+        this.kafka = kafka;
     }
+
 
 }
 
