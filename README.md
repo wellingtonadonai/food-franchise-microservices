@@ -1,84 +1,165 @@
-Franchise Microservices - Sistema de Gestão de Vendas
+# 🍦 Franchise Microservices
 
-Este projeto é um ecossistema de microsserviços desenvolvido para gerenciar o catálogo e as vendas de uma franquia (ex: Açaí/Sorveteria). O sistema utiliza comunicação assíncrona, banco de dados NoSQL e uma porta de entrada unificada.
+Sistema de microsserviços para gerenciamento de catálogo e vendas de uma franquia de alimentos (Açaí / Sorveteria), utilizando arquitetura distribuída, mensageria assíncrona e banco NoSQL.
 
-🏗️ Arquitetura do Sistema
+---
 
-O sistema é composto por três serviços principais que trabalham em conjunto:
+## 🚀 Tecnologias Utilizadas
 
-API Gateway (Porta 8000): O maestro do sistema. Centraliza todas as requisições e as direciona para os serviços corretos, evitando que o cliente precise lidar com múltiplas portas.
+- Java 21
+- Spring Boot 3
+- Spring Cloud Gateway
+- Apache Kafka
+- MongoDB
+- Docker & Docker Compose
+- Maven
+- Lombok
 
-Catalog Service (Porta 8080): Gerencia o inventário de produtos. Permite criar, editar e listar itens (como açaís, sorvetes e acompanhamentos).
+---
 
-Order Service (Porta 8081): O motor de vendas. Processa os pedidos, calcula o valor total utilizando BigDecimal (garantindo precisão financeira) e mantém um histórico de vendas.
+# 🏗️ Arquitetura do Sistema
 
-🛠️ Tecnologias Utilizadas
-Java 21 & Spring Boot 3.x
+O sistema é composto por 3 microsserviços principais:
 
-Spring Cloud Gateway: Para o roteamento das APIs.
+| Serviço | Porta | Responsabilidade |
+|---|---|---|
+| API Gateway | 8000 | Centraliza e roteia as requisições |
+| Catalog Service | 8080 | Gerencia o catálogo de produtos |
+| Order Service | 8081 | Processa pedidos e vendas |
 
-Apache Kafka: Para sincronização de dados entre serviços (Mensageria).
+---
 
-MongoDB: Banco de dados NoSQL para alta performance e flexibilidade.
+## 🔄 Comunicação entre Serviços
 
-Docker & Docker Compose: Para subir a infraestrutura de banco e mensageria de forma rápida.
+O projeto utiliza comunicação assíncrona com Apache Kafka.
 
-Lombok: Para redução de código boilerplate.
+### Fluxo:
 
-🚦 Como Rodar o Projeto
-1. Pré-requisitos
+1. O `Catalog Service` cria/atualiza um produto
+2. Uma mensagem é publicada no Kafka
+3. O `Order Service` consome essa mensagem
+4. O produto é salvo localmente como cache
+5. Os pedidos podem ser processados sem consultar o catálogo diretamente
 
-Docker instalado.
+---
 
-Java 21 instalado.
+## 💰 Precisão Financeira
 
-Maven.
+Os cálculos financeiros utilizam:
 
-2. Subindo a Infraestrutura (Banco e Kafka)
-   Na pasta raiz, onde está o seu arquivo docker-compose.yml, execute:
+```java
+BigDecimal
+```
 
-Bash
+Garantindo precisão monetária e evitando problemas comuns com `double` e `float`.
+
+---
+
+# 🐳 Como Rodar o Projeto
+
+## 1️⃣ Pré-requisitos
+
+- Java 21
+- Maven
+- Docker Desktop
+
+---
+
+## 2️⃣ Subindo Infraestrutura
+
+Na raiz do projeto:
+
+```bash
 docker-compose up -d
+```
 
-3. Rodando os Serviços
+Isso irá subir:
 
+- MongoDB
+- Apache Kafka
+- Zookeeper
 
-Abra cada projeto no seu IntelliJ e execute as classes principais na seguinte ordem sugerida:
+---
 
+## 3️⃣ Executando os Microsserviços
+
+Execute na seguinte ordem:
+
+```text
 CatalogServiceApplication
-
 OrderServiceApplication
-
 ApiGatewayApplication
+```
 
-🔗 Endpoints Principais (Via Gateway - Porta 8000)
-🍦 Catálogo de Produtos
-Listar Produtos: GET /products
+---
 
-Buscar por ID: GET /products/{id}
+# 🔗 Endpoints Principais
 
-Criar Produto: POST /products (Envia JSON com nome e preço)
+## 🍦 Produtos
 
-📝 Pedidos de Venda
+### Listar produtos
+```http
+GET /products
+```
 
-Realizar Pedido: POST /orders
+### Buscar produto por ID
+```http
+GET /products/{id}
+```
 
-JSON
+### Criar produto
+```http
+POST /products
+```
+
+Exemplo:
+
+```json
 {
-"clienteNome": "Nome do Cliente",
-"itens": [
-{ "productId": "ID_DO_PRODUTO", "quantidade": 2 }
-]
+  "nome": "Açaí 500ml",
+  "preco": 25.90
 }
+```
 
-Fluxo de Dados 
+---
 
-Quando um produto é criado no Catalog Service, ele envia uma mensagem para o Kafka.
+## 📝 Pedidos
 
-O Order Service escuta essa mensagem e salva uma cópia (cache) no seu próprio banco MongoDB.
+### Realizar pedido
+```http
+POST /orders
+```
 
-Isso permite que o Order Service faça vendas instantâneas sem precisar consultar o Catálogo toda hora, garantindo que o sistema nunca pare!
+Body:
 
-👨‍💻 Desenvolvedor
+```json
+{
+  "clienteNome": "Wellington",
+  "itens": [
+    {
+      "productId": "ID_DO_PRODUTO",
+      "quantidade": 2
+    }
+  ]
+}
+```
 
-Wellington - Back-end Java Developer
+---
+
+# 📦 Estrutura do Projeto
+
+```text
+franchise-microservices
+│
+├── api-gateway
+├── catalog-service
+├── order-service
+└── docker-compose.yml
+```
+
+---
+
+# 👨‍💻 Desenvolvedor
+
+### Wellington Silva
+Back-end Java Developer
