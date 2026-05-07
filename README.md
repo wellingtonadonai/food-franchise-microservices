@@ -55,6 +55,57 @@ Garantindo precisão monetária e evitando problemas comuns com `double` e `floa
 
 ---
 
+# 🔑 Configuração de Inteligência Artificial
+
+O sistema utiliza Inteligência Artificial para automações e processamento inteligente de informações.
+
+Para que o serviço funcione corretamente, é necessário configurar uma chave de API.
+
+---
+
+## ⚙️ Configurando a API Key
+
+Por segurança, a chave da IA não deve ser armazenada diretamente no código.
+
+### 1️⃣ Configure o `application.yml`
+
+No serviço correspondente, vá até:
+
+```text
+src/main/resources/application.yml
+```
+
+E configure:
+
+```yml
+ia:
+  api-key: ${IA_API_KEY}
+```
+
+---
+
+### 2️⃣ Configure a variável de ambiente
+
+No IntelliJ:
+
+```text
+Run → Edit Configurations
+```
+
+No campo:
+
+```text
+Environment Variables
+```
+
+Adicione:
+
+```text
+IA_API_KEY=sua_chave_aqui
+```
+
+---
+
 # 🐳 Como Rodar o Projeto
 
 ## 1️⃣ Pré-requisitos
@@ -98,16 +149,19 @@ ApiGatewayApplication
 ## 🍦 Produtos
 
 ### Listar produtos
+
 ```http
 GET /products
 ```
 
 ### Buscar produto por ID
+
 ```http
 GET /products/{id}
 ```
 
 ### Criar produto
+
 ```http
 POST /products
 ```
@@ -126,6 +180,7 @@ Exemplo:
 ## 📝 Pedidos
 
 ### Realizar pedido
+
 ```http
 POST /orders
 ```
@@ -162,4 +217,5 @@ franchise-microservices
 # 👨‍💻 Desenvolvedor
 
 ### Wellington Silva
+
 Back-end Java Developer
